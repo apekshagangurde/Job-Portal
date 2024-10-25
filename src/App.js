@@ -9,14 +9,17 @@ function App() {
   const [jobs, setJobs] = useState([]);
   const [filters, setFilters] = useState({ jobType: "", location: "" });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const loadJobs = async () => {
     setLoading(true);
+    setError(""); // Reset error state
     try {
       const jobData = await fetchJobs(filters);
       setJobs(jobData);
     } catch (error) {
       console.error("Error fetching jobs:", error);
+      setError("Failed to load jobs. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -32,7 +35,9 @@ function App() {
     <div className="App">
       <h1>Job Listings</h1>
       <Filter onFilterChange={handleFilterChange} />
-      {loading ? <p>Loading jobs...</p> : <JobList jobs={jobs} />}
+      {loading && <p>Loading jobs...</p>}
+      {error && <p className="error">{error}</p>}
+      {!loading && <JobList jobs={jobs} />}
     </div>
   );
 }
